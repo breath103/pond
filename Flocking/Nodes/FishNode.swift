@@ -32,7 +32,7 @@ class FishNode: SKSpriteNode, Updatable {
 
     init() {
         velocityShapeNode = .init().then {
-            $0.strokeColor = .red
+            $0.strokeColor = .init(red: 0, green: 1.0, blue: 0, alpha: 0.6)
             $0.lineWidth = 1
             $0.path = CGMutablePath().then {
                 $0.move(to: CGPoint(x: 0, y: 0))
@@ -42,7 +42,7 @@ class FishNode: SKSpriteNode, Updatable {
             $0.isHidden = true
         }
         visibleAreaShapeNode = .init().then {
-            $0.strokeColor = .init(red: 0.5, green: 0, blue: 0, alpha: 1.0)
+            $0.strokeColor = .init(red: 1.0, green: 0, blue: 0, alpha: 0.6)
             $0.lineWidth = 1
             $0.zPosition = 3
             $0.path = CGMutablePath().then {

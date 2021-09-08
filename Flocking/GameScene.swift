@@ -16,25 +16,71 @@ class ConfigValue {
 class GameScene: SKScene {
     private var debugLabel : SKLabelNode!
     private var nodes: [FishNode] = [];
+    private var wallNodes: [WallNode] = [];
+    private var predatorNodes: [PredatorNode] = [];
+
+    private var boundingRect: CGRect {
+        get {
+            return CGRect(
+                x: -0.5 * size.width,
+                y: -0.5 * size.height,
+                width: size.width,
+                height: size.height
+            )
+        }
+    }
 
     override func didMove(to view: SKView) {
         debugLabel = SKLabelNode.init()
         debugLabel.text = "Cohesion Point"
         self.addChild(debugLabel);
 
+
+        // initialize fish nodes
         60.times { index in
             FishNode().then {
                 nodes.append($0)
                 addChild($0)
             }
         }
-
         randomizeNodes()
+
+        // initialize wall and boundaries
+        let wallDepth = 25;
+
+        // Screen
+        let xRange = (Int(-0.5 * size.width), Int(0.5 * size.width))
+        let yRange = (Int(-0.5 * size.height), Int(0.5 * size.height))
+
+        wallNodes = [
+            .init(.init(x: xRange.0, y: yRange.1 - Int(wallDepth), width: Int(size.width), height: Int(wallDepth))),
+            .init(.init(x: xRange.0, y: yRange.0, width: Int(size.width), height: Int(wallDepth))),
+            .init(.init(x: xRange.0, y: yRange.0, width: Int(wallDepth), height: Int(size.height))),
+            .init(.init(x: xRange.1 - Int(wallDepth), y: yRange.0, width: Int(wallDepth), height: Int(size.height))),
+        ]
+        wallNodes.forEach { addChild($0) }
+
+        predatorNodes = 5.times { _ in
+            let node: PredatorNode = .init(circleOfRadius: CGFloat.random(min: 5, max: 20))
+            node.position = CGPoint(size: self.size) * CGPoint(
+                x: CGFloat.random(in: (-0.5...0.5)),
+                y: CGFloat.random(in: (-0.5...0.5))
+            )
+            self.addChild(node)
+            return node
+        }
     }
 
     func randomizeNodes() {
         nodes.forEach {
             $0.velocity = CGVector(angle: CGFloat.random(min: 0, max: 2 * CGFloat.pi))
+            $0.position = CGPoint(size: self.size) * CGPoint(
+                x: CGFloat.random(in: (-0.5...0.5)),
+                y: CGFloat.random(in: (-0.5...0.5))
+            )
+        }
+
+        predatorNodes.forEach {
             $0.position = CGPoint(size: self.size) * CGPoint(
                 x: CGFloat.random(in: (-0.5...0.5)),
                 y: CGFloat.random(in: (-0.5...0.5))
@@ -48,10 +94,8 @@ class GameScene: SKScene {
         if let lastUpdateTime = lastUpdateTime {
             let elapsedTime = CGFloat(currentTime - lastUpdateTime)
             nodes.forEach {
-                $0.update(elapsedTime: elapsedTime)
+                $0.update(elapsedTime: elapsedTime * 2)
             }
-
-            // self.debugLabel.position = averagePosition
 
             // Change velocity based on Flocking algorithm
             let maxSpeed: CGFloat = 50
@@ -81,17 +125,11 @@ class GameScene: SKScene {
 
                 let seperation: CGVector = {
                     var force = CGVector()
-//                    let desiredDistance: CGFloat = 50
                     neighbourNodes.forEach { (node: FishNode, direction: CGVector, distance: CGFloat) in
                         // If it's close, seperation has to be strong
-                        if distance < (node.visibleDistance * 0.40) {
-                            force += (direction / pow(distance, 2))
+                        if distance < (node.visibleDistance * 0.30) {
+                            force += direction
                         }
-
-//                        if (distance < desiredDistance) {
-//
-//                            // (direction / pow(distance, 3)) * desiredDistance
-//                        }
                     }
 
                     return force.normalized()
@@ -102,12 +140,39 @@ class GameScene: SKScene {
                     return (averageVelocity - node.velocity.normalized())
                 }()
 
+                let boundaryPush: CGVector = {
+                    var sumVector: CGVector = .init();
+
+                    let wallDistanceThread: CGFloat = 80.0;
+                    wallNodes.forEach { wallNode in
+                        let direction = wallNode.distanceTo(point: node.position)
+
+                        let distance = direction.length()
+                        if (distance < wallDistanceThread) {
+                            sumVector += direction.normalized() * (wallDistanceThread - distance)
+                        }
+                    }
+
+                    let predatorDistanceThread : CGFloat = 100;
+                    predatorNodes.forEach { predatorNode in
+                        let direction = predatorNode.distanceTo(point: node.position)
+                        let distance = direction.length()
+                        if (distance < predatorDistanceThread) {
+                            sumVector += direction.normalized() * (predatorDistanceThread - distance) * 0.8
+                        }
+                    }
+
+                    return sumVector;
+                }()
+
                 node.velocity += (
-                    cohension * 1.2 +
-                    seperation * 1.0 +
-                    alignment * 1.3
+                    cohension * 1.0 +
+                    seperation * 1.5 +
+                    alignment * 1.2 +
+                    boundaryPush * 0.5
                 );
                 node.velocity *= maxSpeed / node.velocity.length()
+                
             }
 
             // Screen
@@ -131,7 +196,6 @@ class GameScene: SKScene {
             }
         }
 
-//        self.updateConfigLabel()
         self.lastUpdateTime = currentTime
     }
 

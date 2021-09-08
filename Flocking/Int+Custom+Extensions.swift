@@ -18,9 +18,12 @@ extension CGPoint {
 }
 
 extension Int {
-    func times(_ fn: (Int) -> Void) {
+    func times<T>(_ fn: (Int) -> T) -> [T] {
+        var result: [T] = []
         for i in (1...self) {
-            fn(i)
+            result.append(fn(i))
         }
+
+        return result
     }
 }
