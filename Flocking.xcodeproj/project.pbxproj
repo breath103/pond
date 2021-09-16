@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4520E72826F360DB002F2553 /* DynamicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520E72726F360DB002F2553 /* DynamicNode.swift */; };
+		454FDE1026E8D94900215D2C /* PredatorNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454FDE0F26E8D94900215D2C /* PredatorNode.swift */; };
+		454FDE1326E8EEA700215D2C /* WallNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454FDE1226E8EEA700215D2C /* WallNode.swift */; };
 		457FEA5A26E3763200157AC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FEA5926E3763200157AC4 /* AppDelegate.swift */; };
 		457FEA5C26E3763200157AC4 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 457FEA5B26E3763200157AC4 /* GameScene.sks */; };
-		457FEA5E26E3763200157AC4 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 457FEA5D26E3763200157AC4 /* Actions.sks */; };
 		457FEA6026E3763200157AC4 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FEA5F26E3763200157AC4 /* GameScene.swift */; };
 		457FEA6226E3763200157AC4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FEA6126E3763200157AC4 /* ViewController.swift */; };
 		457FEA6426E3763300157AC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 457FEA6326E3763300157AC4 /* Assets.xcassets */; };
@@ -32,10 +34,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4520E72726F360DB002F2553 /* DynamicNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicNode.swift; sourceTree = "<group>"; };
+		454FDE0F26E8D94900215D2C /* PredatorNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredatorNode.swift; sourceTree = "<group>"; };
+		454FDE1226E8EEA700215D2C /* WallNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallNode.swift; sourceTree = "<group>"; };
 		457FEA5626E3763200157AC4 /* Flocking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flocking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		457FEA5926E3763200157AC4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		457FEA5B26E3763200157AC4 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		457FEA5D26E3763200157AC4 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		457FEA5F26E3763200157AC4 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		457FEA6126E3763200157AC4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		457FEA6326E3763300157AC4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -70,6 +74,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		454FDE1126E8D95400215D2C /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				45F3E1EE26E4B3D700EB9779 /* FishNode.swift */,
+				454FDE0F26E8D94900215D2C /* PredatorNode.swift */,
+				454FDE1226E8EEA700215D2C /* WallNode.swift */,
+				4520E72726F360DB002F2553 /* DynamicNode.swift */,
+			);
+			path = Nodes;
+			sourceTree = "<group>";
+		};
 		457FEA4D26E3763200157AC4 = {
 			isa = PBXGroup;
 			children = (
@@ -89,14 +104,13 @@
 		457FEA5826E3763200157AC4 /* Flocking */ = {
 			isa = PBXGroup;
 			children = (
+				454FDE1126E8D95400215D2C /* Nodes */,
 				45F3E1F026E4B4CE00EB9779 /* SKTUtils */,
 				45F3E20E26E4E96400EB9779 /* Int+Custom+Extensions.swift */,
 				457FEA5926E3763200157AC4 /* AppDelegate.swift */,
 				457FEA5B26E3763200157AC4 /* GameScene.sks */,
-				457FEA5D26E3763200157AC4 /* Actions.sks */,
 				457FEA5F26E3763200157AC4 /* GameScene.swift */,
 				457FEA6126E3763200157AC4 /* ViewController.swift */,
-				45F3E1EE26E4B3D700EB9779 /* FishNode.swift */,
 				457FEA6326E3763300157AC4 /* Assets.xcassets */,
 				457FEA6526E3763300157AC4 /* Main.storyboard */,
 				457FEA6826E3763300157AC4 /* Info.plist */,
@@ -189,7 +203,6 @@
 			files = (
 				457FEA5C26E3763200157AC4 /* GameScene.sks in Resources */,
 				457FEA6426E3763300157AC4 /* Assets.xcassets in Resources */,
-				457FEA5E26E3763200157AC4 /* Actions.sks in Resources */,
 				457FEA6726E3763300157AC4 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -215,8 +228,11 @@
 				45F3E20226E4B4CE00EB9779 /* SKAction+SpecialEffects.swift in Sources */,
 				45F3E20626E4B4CE00EB9779 /* SKTAudio.swift in Sources */,
 				45F3E20426E4B4CE00EB9779 /* CGPoint+Extensions.swift in Sources */,
+				454FDE1326E8EEA700215D2C /* WallNode.swift in Sources */,
+				4520E72826F360DB002F2553 /* DynamicNode.swift in Sources */,
 				45F3E20726E4B4CE00EB9779 /* Vector3.swift in Sources */,
 				45F3E20826E4B4CE00EB9779 /* CGFloat+Extensions.swift in Sources */,
+				454FDE1026E8D94900215D2C /* PredatorNode.swift in Sources */,
 				457FEA5A26E3763200157AC4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

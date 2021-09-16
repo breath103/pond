@@ -2,26 +2,14 @@ import SpriteKit
 import GameplayKit
 import Then
 
-protocol Updatable {
-    func update(elapsedTime: CGFloat)
-}
-
-class FishNode: SKSpriteNode, Updatable {
+class FishNode: DynamicNode {
     static private let texture: SKTexture = .init(imageNamed: "fish_icon")
     static private let textureSize: CGSize = texture.size().with {
         $0.width *= 0.25
         $0.height *= 0.25
     }
 
-    private var velocityShapeNode: SKShapeNode
-    public var velocity: CGVector = .init() {
-        didSet {
-            velocityShapeNode.xScale = velocity.length()
-            zRotation = CGFloat(atan2(velocity.dy, velocity.dx))
-        }
-    }
-
-    private var visibleAreaShapeNode: SKShapeNode
+    private let visibleAreaShapeNode: SKShapeNode
     public var visibleDistance: CGFloat {
         didSet {
             visibleAreaShapeNode.path = CGMutablePath().then {
@@ -29,18 +17,15 @@ class FishNode: SKSpriteNode, Updatable {
             }
         }
     }
+    private let spriteNode: SKSpriteNode
 
-    init() {
-        velocityShapeNode = .init().then {
-            $0.strokeColor = .init(red: 0, green: 1.0, blue: 0, alpha: 0.6)
-            $0.lineWidth = 1
-            $0.path = CGMutablePath().then {
-                $0.move(to: CGPoint(x: 0, y: 0))
-                $0.addLine(to: CGPoint(x: 4.0, y: 0))
-            }
-            $0.zPosition = 2
-            $0.isHidden = true
+    public var level: CGFloat = 1.0 {
+        didSet {
+            self.spriteNode.setScale(self.level)
         }
+    }
+
+    override init() {
         visibleAreaShapeNode = .init().then {
             $0.strokeColor = .init(red: 1.0, green: 0, blue: 0, alpha: 0.6)
             $0.lineWidth = 1
@@ -50,37 +35,19 @@ class FishNode: SKSpriteNode, Updatable {
             }
             $0.isHidden = true
         }
-        visibleDistance = 250
+        visibleDistance = 250;
+        spriteNode = SKSpriteNode(texture: Self.texture, size: Self.textureSize)
 
-        super.init(texture: Self.texture, color: .clear, size: Self.textureSize)
-        super.addChild(velocityShapeNode)
-        super.addChild(visibleAreaShapeNode)
+        defer {
+            addChild(visibleAreaShapeNode)
+            addChild(spriteNode)
+            self.level = CGFloat.random(min: 0.5, max: 1.5)
+        }
+
+        super.init()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func update(elapsedTime: CGFloat) {
-        position += velocity * elapsedTime
-    }
-
-//    var velocity: CGPoint = .init(
-//        x: 20 * CGFloat.random(in: (-0.5...0.5)),
-//        y: 20 * CGFloat.random(in: (-0.5...0.5))
-//    )
-//
-//    func randomizePosition(range: CGSize) {
-//        node.position = CGPoint(
-//            x: range.width * CGFloat.random(in: (-0.3...0.3)),
-//            y: range.height * CGFloat.random(in: (-0.3...0.3))
-//        )
-//    }
-//
-//    func rorateVelocity(angleRadian: CGFloat) {
-//        self.updateVelocity(newVelocity: CGPoint(
-//            x: cos(angleRadian) * velocity.x - sin(angleRadian) * velocity.y,
-//            y: sin(angleRadian) * velocity.x + cos(angleRadian) * velocity.y
-//        ))
-//    }
 }

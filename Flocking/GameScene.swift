@@ -14,7 +14,6 @@ class ConfigValue {
 }
 
 class GameScene: SKScene {
-    private var debugLabel : SKLabelNode!
     private var nodes: [FishNode] = [];
     private var wallNodes: [WallNode] = [];
     private var predatorNodes: [PredatorNode] = [];
@@ -31,13 +30,8 @@ class GameScene: SKScene {
     }
 
     override func didMove(to view: SKView) {
-        debugLabel = SKLabelNode.init()
-        debugLabel.text = "Cohesion Point"
-        self.addChild(debugLabel);
-
-
         // initialize fish nodes
-        60.times { index in
+        30.times { index in
             FishNode().then {
                 nodes.append($0)
                 addChild($0)
@@ -60,7 +54,7 @@ class GameScene: SKScene {
         ]
         wallNodes.forEach { addChild($0) }
 
-        predatorNodes = 5.times { _ in
+        predatorNodes = 1.times { _ in
             let node: PredatorNode = .init(circleOfRadius: CGFloat.random(min: 5, max: 20))
             node.position = CGPoint(size: self.size) * CGPoint(
                 x: CGFloat.random(in: (-0.5...0.5)),
@@ -79,8 +73,8 @@ class GameScene: SKScene {
                 y: CGFloat.random(in: (-0.5...0.5))
             )
         }
-
         predatorNodes.forEach {
+            $0.velocity = CGVector(angle: CGFloat.random(min: 0, max: 2 * CGFloat.pi)) * 20
             $0.position = CGPoint(size: self.size) * CGPoint(
                 x: CGFloat.random(in: (-0.5...0.5)),
                 y: CGFloat.random(in: (-0.5...0.5))
@@ -90,10 +84,19 @@ class GameScene: SKScene {
 
     private var lastUpdateTime: TimeInterval?
 
+    var disableUpdate: Bool = false
+
     override func update(_ currentTime: TimeInterval) {
+        if (disableUpdate) {
+            return
+        }
+
         if let lastUpdateTime = lastUpdateTime {
             let elapsedTime = CGFloat(currentTime - lastUpdateTime)
             nodes.forEach {
+                $0.update(elapsedTime: elapsedTime * 2)
+            }
+            predatorNodes.forEach {
                 $0.update(elapsedTime: elapsedTime * 2)
             }
 
@@ -153,7 +156,7 @@ class GameScene: SKScene {
                         }
                     }
 
-                    let predatorDistanceThread : CGFloat = 100;
+                    let predatorDistanceThread : CGFloat = 200;
                     predatorNodes.forEach { predatorNode in
                         let direction = predatorNode.distanceTo(point: node.position)
                         let distance = direction.length()
@@ -175,11 +178,38 @@ class GameScene: SKScene {
                 
             }
 
+            predatorNodes.forEach { predator in
+                let closestFish = nodes.min { fishA, fishB in
+                    let distanceToA = fishA.position.distanceTo(predator.position)
+                    let distanceToB = fishB.position.distanceTo(predator.position)
+                    return distanceToA < distanceToB
+                }!
+
+                let directionToFish = CGVector(point: closestFish.position - predator.position)
+                predator.velocity = (predator.velocity + directionToFish.normalized() * 1.0).normalized() * 20
+            }
+
+
             // Screen
             let xRange = (-0.5 * size.width, 0.5 * size.width)
             let yRange = (-0.5 * size.height, 0.5 * size.height)
 
-            self.nodes.forEach {
+            nodes.forEach {
+                if ($0.position.x < xRange.0) {
+                    $0.position.x = xRange.1
+                }
+                if ($0.position.x > xRange.1) {
+                    $0.position.x = xRange.0
+                }
+
+                if ($0.position.y < yRange.0) {
+                    $0.position.y = yRange.1
+                }
+                if ($0.position.y > yRange.1) {
+                    $0.position.y = yRange.0
+                }
+            }
+            predatorNodes.forEach {
                 if ($0.position.x < xRange.0) {
                     $0.position.x = xRange.1
                 }
@@ -199,46 +229,39 @@ class GameScene: SKScene {
         self.lastUpdateTime = currentTime
     }
 
-//
-//    func touchDown(atPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.green
-//            self.addChild(n)
-//        }
-//    }
-//
-//    func touchMoved(toPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.blue
-//            self.addChild(n)
-//        }
-//    }
-//
-//    func touchUp(atPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.red
-//            self.addChild(n)
-//        }
-//    }
-//
-//    override func mouseDown(with event: NSEvent) {
+    override func mouseDown(with event: NSEvent) {
 //        self.touchDown(atPoint: event.location(in: self))
-//    }
-//
-//    override func mouseDragged(with event: NSEvent) {
+    }
+
+    override func mouseDragged(with event: NSEvent) {
 //        self.touchMoved(toPoint: event.location(in: self))
-//    }
-//
-//    override func mouseUp(with event: NSEvent) {
-//        self.touchUp(atPoint: event.location(in: self))
-//    }
-//
+    }
+
+    override func rightMouseUp(with event: NSEvent) {
+        let position = event.location(in: self)
+
+        PredatorNode(circleOfRadius: CGFloat.random(min: 5, max: 20)).then {
+            $0.position = position
+            predatorNodes.append($0)
+            self.addChild($0)
+        }
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        let position = event.location(in: self)
+
+        FishNode().then {
+            $0.position = position
+            nodes.append($0)
+            self.addChild($0)
+        }
+    }
+
     override func keyDown(with event: NSEvent) {
         if (event.keyCode == 49) {
             randomizeNodes()
+        } else if (event.keyCode == 0) { // "a"
+            disableUpdate.toggle()
         }
     }
 }

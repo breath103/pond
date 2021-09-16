@@ -1,16 +1,22 @@
 import SpriteKit
 
-class PredatorNode: SKShapeNode {
+class PredatorNode: DynamicNode {
+    static private let texture: SKTexture = .init(imageNamed: "shark_icon")
+    static private let textureSize: CGSize = texture.size().with {
+        $0.width *= 0.25
+        $0.height *= 0.25
+    }
     private var circleRadius: CGFloat
-
+    private let spriteNode: SKSpriteNode
+    
     init(circleOfRadius: CGFloat) {
         self.circleRadius = circleOfRadius
-        super.init();
-
-        path = CGMutablePath().then {
-            $0.addArc(center: CGPoint(), radius: circleRadius, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+        spriteNode = SKSpriteNode(texture: Self.texture, size: Self.textureSize)
+        defer {
+            addChild(spriteNode)
         }
-        fillColor = .blue
+
+        super.init();
     }
 
     required init?(coder aDecoder: NSCoder) {
